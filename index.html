@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Serverless Web App</title>
+    <style>
+        body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f4f6f8; }
+        .card { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
+        h2 { margin-top: 0; color: #232f3e; }
+        input[type="text"] { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; background-color: #ff9900; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; color: #111; }
+        button:hover { background-color: #ec8b00; }
+        #response { margin-top: 15px; font-size: 0.9em; word-break: break-all; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Serverless Task Dispatcher</h2>
+    <input type="text" id="taskMessage" placeholder="Enter message / task description">
+    <button onclick="submitTask()">Send Request</button>
+    <div id="response"></div>
+</div>
+
+<script>
+    // Real API Gateway Endpoint
+    const API_URL = "https://lz36u6fzbe.execute-api.ap-south-1.amazonaws.com/items";
+
+    async function submitTask() {
+        const messageInput = document.getElementById('taskMessage').value;
+        const responseDiv = document.getElementById('response');
+        
+        if (!messageInput) {
+            responseDiv.innerHTML = "<span style='color:red;'>Please enter a message.</span>";
+            return;
+        }
+
+        responseDiv.innerHTML = "Processing...";
+
+        try {
+            const res = await fetch(API_URL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: jsonString = JSON.stringify({ message: messageInput })
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                responseDiv.innerHTML = `<span style='color:green;'><b>Success!</b> ID: ${data.id}<br>${data.message}</span>`;
+            } else {
+                responseDiv.innerHTML = `<span style='color:red;'>Error: ${data.error || 'Request failed'}</span>`;
+            }
+        } catch (error) {
+            responseDiv.innerHTML = `<span style='color:red;'>Network Error: ${error.message}</span>`;
+        }
+    }
+</script>
+
+</body>
+</html>
